@@ -42,4 +42,22 @@ const getUrls = async (req, res, next) => {
   }
 };
 
-export { createShortUrl, getUrls };
+//get url function
+const getUrl = async (req, res, next) => {
+  try {
+    const { shortUrl } = req.params;
+    if (!shortUrl) {
+      return res.status(400).json("ShortUrl is required");
+    }
+    const url = await Url.findOne({ shortUrl });
+    if (!url) {
+      res.status(404).json("Url not found");
+    }
+    res.status(200).json(url);
+  } catch (error) {
+    console.log(`Error`, error);
+    res.status(500).json("Internal Server Error");
+  }
+};
+
+export { createShortUrl, getUrls, getUrl };
