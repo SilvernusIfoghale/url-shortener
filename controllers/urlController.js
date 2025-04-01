@@ -60,4 +60,54 @@ const getUrl = async (req, res, next) => {
   }
 };
 
-export { createShortUrl, getUrls, getUrl };
+//redirect
+
+const redirectUrl = async (req, res, next) => {
+  try {
+    const { shortUrl } = req.params;
+    if (!shortUrl) {
+      return res.status(400).json("ShortUrl is required");
+    }
+    const url = await Url.findOne({ shortUrl });
+    if (!url) {
+      return res.status(404).json("URL not found");
+    }
+    res.status(301).redirect(url.originalUrl);
+  } catch (error) {
+    console.log(`Error`, error);
+    res.status(500).json("Internal Server Error");
+  }
+};
+
+const updateUrl = async (req, res, next) => {
+  const { shortUrl } = req.params;
+  const { originalUrl } = req.body;
+
+  if (!shortUrl || !originalUrl) {
+    return res
+      .status(400)
+      .json(
+        "ShortUrl in route params & originalUrl in the request body is required"
+      );
+  }
+  try {
+    const url = await Url.findOneAndUpdate(
+      { shortUrl },
+      {
+        originalUrl,
+      },
+      {
+        new: true,
+      }
+    );
+    if (!url) {
+      return res.status(404).json("URL not found to update");
+    }
+    res.status(200).json(url);
+  } catch (error) {
+    console.log(`Error`, error);
+    res.status(500).json("Internal Server Error");
+  }
+};
+
+export { createShortUrl, getUrls, getUrl, redirectUrl, updateUrl };

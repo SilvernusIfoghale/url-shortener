@@ -3,6 +3,8 @@ import {
   createShortUrl,
   getUrl,
   getUrls,
+  redirectUrl,
+  updateUrl,
 } from "../controllers/urlController.js";
 
 const router = express.Router();
@@ -15,5 +17,11 @@ router.get("/", getUrls);
 
 //get single url
 router.get("/:shortUrl", getUrl);
+
+//Redirect to originalUrl
+router.get("/redirect/:shortUrl", redirectUrl);
+
+//update original url with shortUrl
+router.put("/:shortUrl", updateUrl);
 
 export default router;
