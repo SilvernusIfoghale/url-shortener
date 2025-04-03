@@ -5,10 +5,20 @@ const createShortUrl = async (req, res, next) => {
   try {
     const { originalUrl } = req.body;
     const shortUrl = Math.random().toString(16).substring(2, 6);
+
     if (!originalUrl) {
       res.status(400);
       return next(new Error("OriginalUrl is required"));
     }
+
+    // Check if the protocol is either http or https
+    if (originalUrl.protocol !== "http:" || originalUrl.protocol !== "https:") {
+      res.status(400);
+      return next(
+        new Error("Invalid URL: Must start with http:// or https://")
+      );
+    }
+
     //check if url already exists
     const isUrlExists = await Url.findOne({ originalUrl });
     if (isUrlExists) {
